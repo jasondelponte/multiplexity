@@ -1,0 +1,11 @@
+{
+	"server": {
+		"address": "chat.freenode.net:6667",
+		"nick": "jasdel",
+		"user": "jasdel",
+		"realName": "jasdel"
+	},
+	"client": {
+		"listenAddress": ":6667"
+	}
+}
