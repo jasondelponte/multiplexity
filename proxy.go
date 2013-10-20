@@ -25,11 +25,15 @@ func (p *Proxy) Start() {
 	p.createServerClient()
 
 	serverCmdHnd := NewServerCommandHandler(p.config, p.serverWriteMsg, p.clientWriteMsg)
+	clientCmdHnd := NewClientCommandHandler(p.config, p.serverWriteMsg, p.clientWriteMsg)
 
 	for {
 		select {
 		case cmd, _ := <-p.serverCmdChan:
 			serverCmdHnd.Handle(cmd)
+
+		case cmd, _ := <-p.clientCmdChan:
+			clientCmdHnd.Handle(cmd)
 		}
 	}
 }

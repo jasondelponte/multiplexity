@@ -21,11 +21,17 @@ func NewServerCommandHandler(config *Config, serverMsgWrite, clientMsgWrite Mess
 func (s *ServerCommandHandler) Handle(command Command) {
 	log.Println("Server command received", command.ToString())
 
-	if command.Type() == CommandTypeServerConnect {
+	switch command.Type() {
+	case CommandTypeServerConnect:
 		s.sendUserCreds()
 
-	} else if command.Type() == CommandTypeMessage {
+	case CommandTypeServerQuit:
+
+	case CommandTypeMessage:
 		s.handleServerMessage(command.(*MessageCommand).Message)
+
+	default:
+		log.Fatalln("Unknown server command:", command.ToString())
 	}
 }
 
