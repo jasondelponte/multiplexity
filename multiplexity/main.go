@@ -21,6 +21,6 @@ func main() {
 		return
 	}
 
-	core := multiplexity.NewCore(config)
-	core.StartProxy()
+	proxy := multiplexity.NewProxy(config)
+	proxy.Start()
 }

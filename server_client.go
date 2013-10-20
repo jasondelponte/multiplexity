@@ -37,11 +37,11 @@ func (s *ServerClient) Connect(address string) error {
 func (s *ServerClient) ReadWritePumps() {
 	go s.readIntercept()
 
+	s.IsConnected = true
 	s.commandChan <- &ServerConnectCommand{
 		FromId: ServerClientId,
 		Server: s,
 	}
-	s.IsConnected = true
 
 	s.conn.ReadWritePumps()
 
