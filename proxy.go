@@ -1,6 +1,8 @@
 package multiplexity
 
-import ()
+import (
+	"time"
+)
 
 type Proxy struct {
 	config *Config
@@ -10,6 +12,8 @@ type Proxy struct {
 
 	clientCmdChan CommandChan
 	serverCmdChan CommandChan
+
+	clients ClientList
 }
 
 func NewProxy(config *Config) *Proxy {
@@ -17,6 +21,7 @@ func NewProxy(config *Config) *Proxy {
 		config:        config,
 		clientCmdChan: make(CommandChan),
 		serverCmdChan: make(CommandChan),
+		clients:       make(ClientList, 0, 0),
 	}
 }
 
@@ -27,13 +32,24 @@ func (p *Proxy) Start() {
 	serverCmdHnd := NewServerCommandHandler(p.config, p.serverWriteMsg, p.clientWriteMsg)
 	clientCmdHnd := NewClientCommandHandler(p.config, p.serverWriteMsg, p.clientWriteMsg)
 
+	pingTick := time.Tick(time.Minute)
 	for {
 		select {
+		case <-pingTick:
+			pingMsg := &Message{
+				Command:  "PING",
+				Trailing: "something really cool just happened",
+			}
+			p.clientWriteMsg(pingMsg)
+
 		case cmd, _ := <-p.serverCmdChan:
 			serverCmdHnd.Handle(cmd)
 
 		case cmd, _ := <-p.clientCmdChan:
 			clientCmdHnd.Handle(cmd)
+
+			// hack client list needs to be outside of proxy and cmd handelr
+			p.clients = clientCmdHnd.clients
 		}
 	}
 }
@@ -44,8 +60,8 @@ func (p *Proxy) serverWriteMsg(message *Message) {
 	}
 }
 func (p *Proxy) clientWriteMsg(message *Message) {
-	if p.clientServer != nil {
-		p.clientServer.Write(message)
+	for _, client := range p.clients {
+		client.Write(message)
 	}
 }
 

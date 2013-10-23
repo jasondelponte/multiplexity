@@ -7,11 +7,13 @@ import (
 
 type ClientServer struct {
 	commandChan CommandChan
+	clientIds   int
 }
 
 func NewClientServer(commandChan CommandChan) *ClientServer {
 	server := &ClientServer{
 		commandChan: commandChan,
+		clientIds:   0,
 	}
 	return server
 }
@@ -31,26 +33,21 @@ func (s *ClientServer) Listen(address string) {
 			continue
 		}
 
-		go s.handleConnection(0, conn)
+		go s.handleConnection(s.clientIds, conn)
+		s.clientIds += 1
 	}
-}
-
-func (s *ClientServer) Write(message *Message) {
-	log.Println("ClientServer asked to post message", message.ToString())
 }
 
 func (s *ClientServer) handleConnection(newId int, conn net.Conn) {
 	client := NewClient(newId, conn, s.commandChan)
 
 	s.commandChan <- &ClientConnectCommand{
-		FromId: newId,
 		Client: client,
 	}
 
 	client.ReadWritePumps()
 
 	s.commandChan <- &ClientQuitCommand{
-		FromId: newId,
 		Client: client,
 	}
 }

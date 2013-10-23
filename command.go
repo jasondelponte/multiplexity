@@ -9,11 +9,11 @@ type CommandType int
 const (
 	CommandTypeClientConnect = iota
 	CommandTypeClientQuit
+	CommandTypeClientMessage
 
 	CommandTypeServerConnect
 	CommandTypeServerQuit
-
-	CommandTypeMessage
+	CommandTypeServerMessage
 )
 
 type Command interface {
@@ -25,7 +25,6 @@ type CommandChan chan Command
 
 // Client Connect Command
 type ClientConnectCommand struct {
-	FromId int
 	Client *Client
 }
 
@@ -34,12 +33,11 @@ func (c ClientConnectCommand) Type() CommandType {
 }
 
 func (c ClientConnectCommand) ToString() string {
-	return fmt.Sprintf("ClientConnectCommand FromId: %d", c.FromId)
+	return fmt.Sprintf("ClientConnectCommand from: %d", c.Client.Id)
 }
 
 // Client Quit Command
 type ClientQuitCommand struct {
-	FromId int
 	Client *Client
 }
 
@@ -48,12 +46,25 @@ func (c ClientQuitCommand) Type() CommandType {
 }
 
 func (c ClientQuitCommand) ToString() string {
-	return fmt.Sprintf("ClientQuitCommand FromId: %d", c.FromId)
+	return fmt.Sprintf("ClientQuitCommand from: %d", c.Client.Id)
+}
+
+// Mesage Command
+type ClientMessageCommand struct {
+	Message *Message
+	Client  *Client
+}
+
+func (c ClientMessageCommand) Type() CommandType {
+	return CommandType(CommandTypeClientMessage)
+}
+
+func (c ClientMessageCommand) ToString() string {
+	return fmt.Sprintf("ClientMessageCommand from: %d Message: %s", c.Client.Id, c.Message.ToString())
 }
 
 // Server Connect Command
 type ServerConnectCommand struct {
-	FromId int
 	Server *ServerClient
 }
 
@@ -62,12 +73,11 @@ func (c ServerConnectCommand) Type() CommandType {
 }
 
 func (c ServerConnectCommand) ToString() string {
-	return fmt.Sprintf("ServerConnectCommand FromId: %d", c.FromId)
+	return fmt.Sprintf("ServerConnectCommand")
 }
 
 // Server Quit Command
 type ServerQuitCommand struct {
-	FromId int
 	Server *ServerClient
 }
 
@@ -76,19 +86,18 @@ func (c ServerQuitCommand) Type() CommandType {
 }
 
 func (c ServerQuitCommand) ToString() string {
-	return fmt.Sprintf("ServerQuitCommand FromId: %d", c.FromId)
+	return fmt.Sprintf("ServerQuitCommand")
 }
 
 // Mesage Command
-type MessageCommand struct {
-	FromId  int
+type ServerMessageCommand struct {
 	Message *Message
 }
 
-func (c MessageCommand) Type() CommandType {
-	return CommandType(CommandTypeMessage)
+func (c ServerMessageCommand) Type() CommandType {
+	return CommandType(CommandTypeServerMessage)
 }
 
-func (c MessageCommand) ToString() string {
-	return fmt.Sprintf("MessageCommand FromId: %d Message: %s", c.FromId, c.Message.ToString())
+func (c ServerMessageCommand) ToString() string {
+	return fmt.Sprintf("ServerMessageCommand Message: %s", c.Message.ToString())
 }

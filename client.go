@@ -8,22 +8,21 @@ import (
 type Client struct {
 	Id          int
 	conn        *Connection
-	readChan    MessageChan
 	commandChan CommandChan
 }
 
+type ClientList []*Client
+
 func NewClient(id int, conn net.Conn, commandChan CommandChan) *Client {
-	readChan := make(MessageChan)
-	return &Client{
+	client := &Client{
 		Id:          id,
-		conn:        NewConnection(conn, readChan),
-		readChan:    readChan,
 		commandChan: commandChan,
 	}
+	client.conn = NewConnection(conn, client.onReadMessage)
+	return client
 }
 
 func (c *Client) ReadWritePumps() {
-	go c.readIntercept()
 	c.conn.ReadWritePumps()
 }
 
@@ -40,16 +39,9 @@ func (c *Client) Write(message *Message) {
 	}
 }
 
-func (c *Client) readIntercept() {
-	for {
-		message, ok := <-c.readChan
-		if !ok {
-			log.Println("Client read intercept closed")
-			break
-		}
-		c.commandChan <- &MessageCommand{
-			FromId:  c.Id,
-			Message: message,
-		}
+func (c *Client) onReadMessage(message *Message) {
+	c.commandChan <- &ClientMessageCommand{
+		Message: message,
+		Client:  c,
 	}
 }

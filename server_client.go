@@ -8,18 +8,17 @@ import (
 type ServerClient struct {
 	conn        *Connection
 	commandChan CommandChan
-	readChan    MessageChan
 	IsConnected bool
 }
 
 const ServerClientId = -1
 
 func NewServerClient(commandChan CommandChan) *ServerClient {
-	return &ServerClient{
+	server := &ServerClient{
 		commandChan: commandChan,
-		readChan:    make(MessageChan),
 		IsConnected: false,
 	}
+	return server
 }
 
 func (s *ServerClient) Connect(address string) error {
@@ -29,24 +28,20 @@ func (s *ServerClient) Connect(address string) error {
 		return err
 	}
 
-	s.conn = NewConnection(conn, s.readChan)
+	s.conn = NewConnection(conn, s.onReadMessage)
 
 	return nil
 }
 
 func (s *ServerClient) ReadWritePumps() {
-	go s.readIntercept()
-
 	s.IsConnected = true
 	s.commandChan <- &ServerConnectCommand{
-		FromId: ServerClientId,
 		Server: s,
 	}
 
 	s.conn.ReadWritePumps()
 
 	s.commandChan <- &ServerQuitCommand{
-		FromId: ServerClientId,
 		Server: s,
 	}
 }
@@ -64,16 +59,8 @@ func (s *ServerClient) Write(message *Message) {
 	}
 }
 
-func (s *ServerClient) readIntercept() {
-	for {
-		message, ok := <-s.readChan
-		if !ok {
-			log.Println("ServerClient read intercept closed")
-			break
-		}
-		s.commandChan <- &MessageCommand{
-			FromId:  ServerClientId,
-			Message: message,
-		}
+func (s *ServerClient) onReadMessage(message *Message) {
+	s.commandChan <- &ServerMessageCommand{
+		Message: message,
 	}
 }

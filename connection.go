@@ -10,15 +10,15 @@ import (
 type Connection struct {
 	conn       net.Conn
 	closeWrite chan bool
-	readChan   MessageChan
+	onReadFn   MessageHandlerFn
 	WriteChan  MessageChan
 }
 
-func NewConnection(conn net.Conn, readChan MessageChan) *Connection {
+func NewConnection(conn net.Conn, onReadFn MessageHandlerFn) *Connection {
 	return &Connection{
 		conn:       conn,
 		closeWrite: make(chan bool),
-		readChan:   readChan,
+		onReadFn:   onReadFn,
 		WriteChan:  make(MessageChan),
 	}
 }
@@ -48,7 +48,7 @@ func (c *Connection) reader() {
 			break
 		}
 
-		c.readChan <- ParseMessage(message)
+		c.onReadFn(ParseMessage(message))
 	}
 	log.Println("Connection reader closing")
 }

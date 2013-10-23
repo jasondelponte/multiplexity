@@ -2,6 +2,8 @@ package multiplexity
 
 import ()
 
+// Also https://www.alien.net.au/irc/irc2numerics.html
+
 //  Source: http://tools.ietf.org/html/rfc2812#section-5
 //  Refactored for go vars
 
@@ -32,6 +34,7 @@ var RPL_MYINFO = "004"
 //  successful registration.
 
 var RPL_BOUNCE = "005"
+var RPL_ISUPPORT = "005"
 
 //  "Try server <server name>, port <port number>"
 

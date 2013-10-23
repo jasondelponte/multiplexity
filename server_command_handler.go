@@ -6,11 +6,11 @@ import (
 
 type ServerCommandHandler struct {
 	config         *Config
-	serverMsgWrite MessageWriteFn
-	clientMsgWrite MessageWriteFn
+	serverMsgWrite MessageHandlerFn
+	clientMsgWrite MessageHandlerFn
 }
 
-func NewServerCommandHandler(config *Config, serverMsgWrite, clientMsgWrite MessageWriteFn) *ServerCommandHandler {
+func NewServerCommandHandler(config *Config, serverMsgWrite, clientMsgWrite MessageHandlerFn) *ServerCommandHandler {
 	return &ServerCommandHandler{
 		config:         config,
 		serverMsgWrite: serverMsgWrite,
@@ -27,8 +27,8 @@ func (s *ServerCommandHandler) Handle(command Command) {
 
 	case CommandTypeServerQuit:
 
-	case CommandTypeMessage:
-		s.handleServerMessage(command.(*MessageCommand).Message)
+	case CommandTypeServerMessage:
+		s.handleServerMessage(command.(*ServerMessageCommand).Message)
 
 	default:
 		log.Fatalln("Unknown server command:", command.ToString())
@@ -58,6 +58,14 @@ func (s *ServerCommandHandler) handleServerMessage(message *Message) {
 			Trailing: message.Trailing,
 		}
 		s.serverMsgWrite(pongMsg)
+
+	// Capture these
+	case RPL_WELCOME:
+	case RPL_YOURHOST:
+	case RPL_CREATED:
+	case RPL_MYINFO:
+	// case RPL_ISUPPORT:
+
 	default:
 		s.clientMsgWrite(message)
 	}

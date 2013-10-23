@@ -17,7 +17,7 @@ var (
 )
 
 type MessageChan chan *Message
-type MessageWriteFn func(*Message)
+type MessageHandlerFn func(*Message)
 
 func ParseMessage(message string) *Message {
 	message = messageLineEndReg.ReplaceAllString(message, "")
