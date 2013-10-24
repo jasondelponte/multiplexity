@@ -67,7 +67,7 @@ func (p *Proxy) clientWriteMsg(message *Message) {
 		switch message.Command {
 		case "PING": // do nothing
 		case "JOIN": // sub client info
-			outMsg.Prefix = fmt.Sprintf("%s!~%s@%s", client.Nick, client.Nick, p.config.Client.Hostname)
+			outMsg.Prefix = fmt.Sprintf("%s!~%s@%s", client.Nick, client.Nick, client.RemoteHost)
 
 		default:
 			outMsg.Prefix = p.config.Client.Hostname
