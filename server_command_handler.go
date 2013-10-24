@@ -19,7 +19,7 @@ func NewServerCommandHandler(config *Config, serverMsgWrite, clientMsgWrite Mess
 }
 
 func (s *ServerCommandHandler) Handle(command Command) {
-	log.Println("Server command received", command.ToString())
+	log.Println("Server command received", command)
 
 	switch command.Type() {
 	case CommandTypeServerConnect:
@@ -31,7 +31,7 @@ func (s *ServerCommandHandler) Handle(command Command) {
 		s.handleServerMessage(command.(*ServerMessageCommand).Message)
 
 	default:
-		log.Fatalln("Unknown server command:", command.ToString())
+		log.Fatalln("Unknown server command:", command)
 	}
 }
 

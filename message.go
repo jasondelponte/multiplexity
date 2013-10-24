@@ -76,10 +76,10 @@ func ParseMessage(message string) *Message {
 }
 
 func (m Message) Serialize() string {
-	return m.ToString() + "\r\n"
+	return m.String() + "\r\n"
 }
 
-func (m Message) ToString() string {
+func (m Message) String() string {
 	msg := ""
 
 	if len(m.Prefix) > 0 {

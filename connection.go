@@ -72,7 +72,7 @@ func (c *Connection) writer() {
 				return
 			}
 
-			log.Println("Wrote to connection", message.ToString(), wrote)
+			log.Println("Wrote to connection", message, wrote)
 		}
 	}
 	log.Println("Connection writer closing")

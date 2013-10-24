@@ -18,7 +18,7 @@ const (
 
 type Command interface {
 	Type() CommandType
-	ToString() string
+	String() string
 }
 
 type CommandChan chan Command
@@ -32,7 +32,7 @@ func (c ClientConnectCommand) Type() CommandType {
 	return CommandType(CommandTypeClientConnect)
 }
 
-func (c ClientConnectCommand) ToString() string {
+func (c ClientConnectCommand) String() string {
 	return fmt.Sprintf("ClientConnectCommand from: %d", c.Client.Id)
 }
 
@@ -45,7 +45,7 @@ func (c ClientQuitCommand) Type() CommandType {
 	return CommandType(CommandTypeClientQuit)
 }
 
-func (c ClientQuitCommand) ToString() string {
+func (c ClientQuitCommand) String() string {
 	return fmt.Sprintf("ClientQuitCommand from: %d", c.Client.Id)
 }
 
@@ -59,8 +59,8 @@ func (c ClientMessageCommand) Type() CommandType {
 	return CommandType(CommandTypeClientMessage)
 }
 
-func (c ClientMessageCommand) ToString() string {
-	return fmt.Sprintf("ClientMessageCommand from: %d Message: %s", c.Client.Id, c.Message.ToString())
+func (c ClientMessageCommand) String() string {
+	return fmt.Sprintf("ClientMessageCommand from: %d Message: %s", c.Client.Id, c.Message)
 }
 
 // Server Connect Command
@@ -72,7 +72,7 @@ func (c ServerConnectCommand) Type() CommandType {
 	return CommandType(CommandTypeServerConnect)
 }
 
-func (c ServerConnectCommand) ToString() string {
+func (c ServerConnectCommand) String() string {
 	return fmt.Sprintf("ServerConnectCommand")
 }
 
@@ -85,7 +85,7 @@ func (c ServerQuitCommand) Type() CommandType {
 	return CommandType(CommandTypeServerQuit)
 }
 
-func (c ServerQuitCommand) ToString() string {
+func (c ServerQuitCommand) String() string {
 	return fmt.Sprintf("ServerQuitCommand")
 }
 
@@ -98,6 +98,6 @@ func (c ServerMessageCommand) Type() CommandType {
 	return CommandType(CommandTypeServerMessage)
 }
 
-func (c ServerMessageCommand) ToString() string {
-	return fmt.Sprintf("ServerMessageCommand Message: %s", c.Message.ToString())
+func (c ServerMessageCommand) String() string {
+	return fmt.Sprintf("ServerMessageCommand Message: %s", c.Message)
 }

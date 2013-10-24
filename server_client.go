@@ -55,7 +55,7 @@ func (s *ServerClient) Write(message *Message) {
 	if s.conn != nil && s.conn.WriteChan != nil {
 		s.conn.WriteChan <- message
 	} else {
-		log.Fatalln("Attempting to write message to server, but is not alive", message.ToString())
+		log.Fatalln("Attempting to write message to server, but is not alive", message)
 	}
 }
 
