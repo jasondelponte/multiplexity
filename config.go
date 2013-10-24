@@ -17,6 +17,7 @@ type Config struct {
 	} `json:"server"`
 
 	Client struct {
+		Hostname      string `json:hostname`
 		ListenAddress string `json:listenAddress`
 	} `json:client`
 }

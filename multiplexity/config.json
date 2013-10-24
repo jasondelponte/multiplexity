@@ -6,6 +6,7 @@
 		"realName": "jasdel"
 	},
 	"client": {
+		"hostname": "localhost",
 		"listenAddress": ":6667"
 	}
 }

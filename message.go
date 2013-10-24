@@ -19,6 +19,18 @@ var (
 type MessageChan chan *Message
 type MessageHandlerFn func(*Message)
 
+func (m Message) Copy() *Message {
+	msg := &Message{
+		Prefix:   m.Prefix,
+		Command:  m.Command,
+		Params:   make([]string, 0, len(m.Params)),
+		Trailing: m.Trailing,
+	}
+	msg.Params = append(msg.Params, m.Params...)
+
+	return msg
+}
+
 func ParseMessage(message string) *Message {
 	message = messageLineEndReg.ReplaceAllString(message, "")
 	prefixEnd := 0

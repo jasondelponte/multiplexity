@@ -7,6 +7,7 @@ import (
 
 type Client struct {
 	Id          int
+	Nick        string
 	conn        *Connection
 	commandChan CommandChan
 }
@@ -16,6 +17,7 @@ type ClientList []*Client
 func NewClient(id int, conn net.Conn, commandChan CommandChan) *Client {
 	client := &Client{
 		Id:          id,
+		Nick:        "unknown",
 		commandChan: commandChan,
 	}
 	client.conn = NewConnection(conn, client.onReadMessage)

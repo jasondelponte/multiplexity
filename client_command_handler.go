@@ -41,38 +41,43 @@ func (c *ClientCommandHandler) Handle(command Command) {
 }
 
 func (c *ClientCommandHandler) handleClientMessage(command *ClientMessageCommand) {
-	switch command.Message.Command {
+	message := command.Message
+	client := command.Client
+
+	switch message.Command {
 	case "PING":
 		pongMsg := &Message{
 			Command:  "PONG",
-			Trailing: command.Message.Trailing,
+			Trailing: message.Trailing,
 		}
-		c.serverMsgWrite(pongMsg)
+		client.Write(pongMsg)
 
 	case "NICK":
-		if c.hasClient(command.Client) {
-		} else {
+		if len(message.Params) > 0 {
+			client.Nick = message.Params[0]
+		}
+		if !c.hasClient(client) {
 			welcomeMsg := &Message{
 				Command:  RPL_WELCOME,
-				Trailing: fmt.Sprintf("Howdy %s", command.Message.Params[0]),
+				Trailing: fmt.Sprintf("Howdy %s", client.Nick),
 			}
-			command.Client.Write(welcomeMsg)
-			c.clients = append(c.clients, command.Client)
+			client.Write(welcomeMsg)
+			c.clients = append(c.clients, client)
 		}
 
 	case "USER":
 		// Ignore user command, only care about nick
 
 	case "QUIT":
-		c.removeClient(command.Client)
+		c.removeClient(client)
 		quitMsg := &Message{
 			Command:  "QUIT",
-			Trailing: fmt.Sprintf("Bye %s!", "nick"),
+			Trailing: fmt.Sprintf("Bye %s!", client.Nick),
 		}
 		command.Client.Write(quitMsg)
 
 	default:
-		c.serverMsgWrite(command.Message)
+		c.serverMsgWrite(message)
 	}
 }
 

@@ -1,6 +1,7 @@
 package multiplexity
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -61,7 +62,17 @@ func (p *Proxy) serverWriteMsg(message *Message) {
 }
 func (p *Proxy) clientWriteMsg(message *Message) {
 	for _, client := range p.clients {
-		client.Write(message)
+		outMsg := message.Copy()
+
+		switch message.Command {
+		case "PING": // do nothing
+		case "JOIN": // sub client info
+			outMsg.Prefix = fmt.Sprintf("%s!~%s@%s", client.Nick, client.Nick, p.config.Client.Hostname)
+
+		default:
+			outMsg.Prefix = p.config.Client.Hostname
+		}
+		client.Write(outMsg)
 	}
 }
 
