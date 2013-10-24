@@ -57,6 +57,7 @@ func (c *ClientCommandHandler) handleClientMessage(command *ClientMessageCommand
 			client.Nick = message.Params[0]
 		}
 		if !c.hasClient(client) {
+			log.Println("Client", client.Id, "joined from", client.RemoteAddr, client.RemoteHost)
 			welcomeMsg := &Message{
 				Command:  RPL_WELCOME,
 				Trailing: fmt.Sprintf("Howdy %s", client.Nick),
